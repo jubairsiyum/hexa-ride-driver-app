@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "603632269214",
+    "project_id": "easylifecarproject",
+    "storage_bucket": "easylifecarproject.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:603632269214:android:32e54bd672d131e533088f",
+        "android_client_info": {
+          "package_name": "com.sixamtech.hexariderider"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtfNOSypgSVV7qmzFZ6ah0b5OHPEHNMmo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:603632269214:android:e4e25d5c60e8bb6f33088f",
+        "android_client_info": {
+          "package_name": "com.sixamtech.hexariderider"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtfNOSypgSVV7qmzFZ6ah0b5OHPEHNMmo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
