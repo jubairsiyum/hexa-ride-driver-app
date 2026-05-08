@@ -17,6 +17,8 @@ import 'package:ride_sharing_user_app/features/profile/widgets/profile_type_butt
 import 'package:ride_sharing_user_app/features/splash/controllers/splash_controller.dart';
 import 'package:ride_sharing_user_app/common_widgets/app_bar_widget.dart';
 import 'package:ride_sharing_user_app/common_widgets/image_widget.dart';
+import 'package:ride_sharing_user_app/common_widgets/active_subscription_widget.dart';
+import 'package:ride_sharing_user_app/features/subscription/controllers/subscription_controller.dart';
 
 
 class ProfileScreen extends StatefulWidget {
@@ -34,6 +36,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Get.find<ProfileController>().getProfileInfo();
     Get.find<WalletController>().getLoyaltyPointList(1);
     Get.find<ProfileController>().setProfileTypeIndex(0);
+
+    // Load subscription status for driver profile.
+    Get.find<SubscriptionController>().getCurrentSubscription(notify: false);
+
     super.initState();
   }
 
@@ -146,13 +152,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
-                      profileController.profileTypeIndex == 0 ?
-                      ProfileDetailsWidget() :
-                      profileController.profileTypeIndex == 2 ?
-                      VehicleDetailsWidget() :
-                      profileController.profileTypeIndex == 1 ?
-                      ProfileLevelDetailsWidget() :
-                      const SizedBox(),
+                      profileController.profileTypeIndex == 0
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ProfileDetailsWidget(),
+                                const SizedBox(height: Dimensions.paddingSizeDefault),
+                                const ActiveSubscriptionWidget(),
+                              ],
+                            )
+                          : profileController.profileTypeIndex == 2
+                              ? VehicleDetailsWidget()
+                              : profileController.profileTypeIndex == 1
+                                  ? ProfileLevelDetailsWidget()
+                                  : const SizedBox(),
 
                     ]),
 
@@ -216,6 +229,3 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
 }
-
-
-

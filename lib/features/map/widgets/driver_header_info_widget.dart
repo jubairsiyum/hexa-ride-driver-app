@@ -8,6 +8,7 @@ import 'package:ride_sharing_user_app/util/dimensions.dart';
 import 'package:ride_sharing_user_app/util/images.dart';
 
 import 'package:ride_sharing_user_app/common_widgets/image_widget.dart';
+import 'package:ride_sharing_user_app/common_widgets/active_subscription_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DriverHeaderInfoWidget extends StatelessWidget {
@@ -18,52 +19,65 @@ class DriverHeaderInfoWidget extends StatelessWidget {
     return GetBuilder<RideController>(builder: (rideController){
       return Padding(
         padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeDefault, 60, Dimensions.paddingSizeDefault,0),
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(100),
-                  border: Border.all(color: Theme.of(context).primaryColor)),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: ImageWidget(width: 50,height: 50,
-                  image: '${Get.find<SplashController>().config!.imageBaseUrl!.profileImage}/${Get.find<ProfileController>().driverImage}',
-                ),
-              ),
-            ),
-
-            const Spacer(),
-
-            if(_isShowNavigatorButton(rideController.tripDetail?.currentStatus))
-              InkWell(
-                onTap: () async{
-                  if(rideController.tripDetail?.currentStatus == 'accepted' || rideController.tripDetail?.currentStatus == 'pending' || rideController.tripDetail?.currentStatus == 'out_for_pickup'){
-
-                    _openMaps(
-                      rideController.tripDetail!.pickupCoordinates!.coordinates![1],
-                      rideController.tripDetail!.pickupCoordinates!.coordinates![0],
-                    );
-
-                  }else {
-                    _openMaps(
-                      rideController.tripDetail!.destinationCoordinates!.coordinates![1],
-                      rideController.tripDetail!.destinationCoordinates!.coordinates![0],
-                    );
-
-                  }
-                },
-                child: Container(
-                  decoration: BoxDecoration(color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(Dimensions.paddingSizeExtraLarge),
-                    boxShadow: [BoxShadow(color: Theme.of(context).hintColor.withValues(alpha: .25), blurRadius: 1,spreadRadius: 1, offset: const Offset(0,1))],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                    child: SizedBox(width: Dimensions.iconSizeMedium, height: Dimensions.iconSizeMedium,
-                      child: Image.asset(Images.navigation, color: Theme.of(context).primaryColor),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      border: Border.all(color: Theme.of(context).primaryColor)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: ImageWidget(
+                      width: 50,
+                      height: 50,
+                      image:
+                          '${Get.find<SplashController>().config!.imageBaseUrl!.profileImage}/${Get.find<ProfileController>().driverImage}',
                     ),
                   ),
                 ),
-              )
+
+                const Spacer(),
+
+                if(_isShowNavigatorButton(rideController.tripDetail?.currentStatus))
+                  InkWell(
+                    onTap: () async{
+                      if(rideController.tripDetail?.currentStatus == 'accepted' || rideController.tripDetail?.currentStatus == 'pending' || rideController.tripDetail?.currentStatus == 'out_for_pickup'){
+                        _openMaps(
+                          rideController.tripDetail!.pickupCoordinates!.coordinates![1],
+                          rideController.tripDetail!.pickupCoordinates!.coordinates![0],
+                        );
+                      }else {
+                        _openMaps(
+                          rideController.tripDetail!.destinationCoordinates!.coordinates![1],
+                          rideController.tripDetail!.destinationCoordinates!.coordinates![0],
+                        );
+                      }
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(Dimensions.paddingSizeExtraLarge),
+                        boxShadow: [BoxShadow(color: Theme.of(context).hintColor.withValues(alpha: .25), blurRadius: 1,spreadRadius: 1, offset: const Offset(0,1))],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                        child: SizedBox(
+                          width: Dimensions.iconSizeMedium,
+                          height: Dimensions.iconSizeMedium,
+                          child: Image.asset(Images.navigation, color: Theme.of(context).primaryColor),
+                        ),
+                      ),
+                    ),
+                  )
+              ],
+            ),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
+            const ActiveSubscriptionWidget(),
           ],
         ),
       );
