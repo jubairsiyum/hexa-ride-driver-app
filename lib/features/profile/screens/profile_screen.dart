@@ -38,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Get.find<ProfileController>().setProfileTypeIndex(0);
 
     // Load subscription status for driver profile.
-    Get.find<SubscriptionController>().getCurrentSubscription(notify: false);
+    Get.find<SubscriptionController>().getCurrentSubscription(notify: true);
 
     super.initState();
   }

@@ -215,21 +215,27 @@ class AuthController extends GetxController implements GetxService {
   Future<void> logOut() async {
     logging = true;
     update();
-    Response? response = await authServiceInterface.logOut();
-    if (response!.statusCode == 200) {
-      Get.find<RideController>().updateRoute(false, notify: true);
-      Get.find<ProfileController>().stopLocationRecord();
-      logging = false;
-      Get.back();
-      LoginHelper.checkLoginMedium();
 
-      PusherHelper().pusherDisconnectPusher();
-      Get.find<SafetyAlertController>().cancelDriverNeedSafetyStream();
-    } else {
+    try {
+      final Response? response = await authServiceInterface.logOut();
+      if (response != null && response.statusCode == 200) {
+        Get.find<RideController>().updateRoute(false, notify: true);
+        Get.find<ProfileController>().stopLocationRecord();
+        Get.back();
+        LoginHelper.checkLoginMedium();
+
+        PusherHelper().pusherDisconnectPusher();
+        Get.find<SafetyAlertController>().cancelDriverNeedSafetyStream();
+      } else if (response != null) {
+        ApiChecker.checkApi(response);
+      }
+    } catch (_) {
+      // keep existing error handling elsewhere if ApiChecker throws;
+      // bottom-sheet loading must be cleared in finally.
+    } finally {
       logging = false;
-      ApiChecker.checkApi(response);
+      update();
     }
-    update();
   }
 
   Future<void> permanentDelete() async {

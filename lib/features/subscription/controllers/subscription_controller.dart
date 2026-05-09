@@ -72,18 +72,22 @@ class SubscriptionController extends GetxController implements GetxService {
     isLoading = true;
     if (notify) update();
 
-    final Response response = await subscriptionServiceInterface.getHistory();
+    try {
+      final Response response =
+          await subscriptionServiceInterface.getHistory();
 
-    if (response.statusCode == 200) {
-      // The app currently doesn't persist history in state.
-      // We keep this method for wiring UI/actions later.
-      // If you want, we can add `history` model/state in the controller.
-    } else {
-      ApiChecker.checkApi(response);
+      if (response.statusCode == 200) {
+        // The app currently doesn't persist history in state.
+        // We keep this method for wiring UI/actions later.
+        // If you want, we can add `history` model/state in the controller.
+      } else {
+        ApiChecker.checkApi(response);
+      }
+    } finally {
+      // Always reset loading flag to prevent infinite spinners.
+      isLoading = false;
+      if (notify) update();
     }
-
-    isLoading = false;
-    if (notify) update();
   }
 
   Future<void> subscribe({
@@ -176,29 +180,66 @@ class SubscriptionController extends GetxController implements GetxService {
 
   void _applyCurrentSubscription(Map<String, dynamic> data) {
     currentSubscription = data;
-    final Object? daysRaw = data['days_remaining'];
+
+    // Helper to read "num/string/date-like" safely.
+    DateTime? _parseDate(Object? raw) {
+      final String? s = raw?.toString();
+      if (s == null || s.isEmpty) return null;
+      return DateTime.tryParse(s);
+    }
+
+    // 1) Days remaining (support multiple nesting)
+    final Object? daysRaw =
+        data['days_remaining'] ??
+        (data['subscription'] is Map ? (data['subscription'] as Map)['days_remaining'] : null) ??
+        (data['current_subscription'] is Map
+            ? (data['current_subscription'] as Map)['days_remaining']
+            : null);
+
     if (daysRaw is num) {
       daysRemaining = daysRaw.toInt();
     } else {
       daysRemaining = 0;
     }
 
-    final Object? subscriptionRaw = data['subscription'];
+    // 2) Subscription object (support multiple keys)
+    final Object? subscriptionRaw =
+        data['subscription'] ?? data['current_subscription'];
+
+    Map<String, dynamic>? subscription;
     if (subscriptionRaw is Map) {
-      final Map<String, dynamic> subscription =
-          Map<String, dynamic>.from(subscriptionRaw);
-      currentStatus = subscription['status']?.toString();
-      final String? expiresAtRaw = subscription['expires_at']?.toString();
-      final DateTime? expiresAt =
-          expiresAtRaw != null ? DateTime.tryParse(expiresAtRaw) : null;
-      bool isActive = currentStatus == 'active';
-      if (expiresAt != null) {
-        isActive = isActive && expiresAt.isAfter(DateTime.now());
-      }
-      hasActiveSubscription = isActive;
-    } else {
-      currentStatus = null;
-      hasActiveSubscription = false;
+      subscription = Map<String, dynamic>.from(subscriptionRaw);
     }
+
+    // Some backends return: data.subscription.subscription.{status, expires_at}
+    // So we try to "drill" one level if that nested object exists.
+    final Map<String, dynamic>? nestedSubscription = subscription?['subscription'] is Map
+        ? Map<String, dynamic>.from(subscription!['subscription'] as Map)
+        : null;
+
+    final Map<String, dynamic>? effectiveSubscription =
+        nestedSubscription ?? subscription;
+
+    // 3) Status/expires_at (support at root or inside subscription)
+    final Object? statusRaw =
+        effectiveSubscription?['status'] ?? data['status'];
+    currentStatus = statusRaw?.toString();
+
+    final Object? expiresAtRaw = effectiveSubscription?['expires_at'] ??
+        effectiveSubscription?['expiresAt'] ??
+        data['expires_at'] ??
+        data['expiresAt'];
+    final DateTime? expiresAt = _parseDate(expiresAtRaw);
+
+    // Be tolerant: sometimes backend may not return `status`, but does return `expires_at`.
+    bool isActive = currentStatus == 'active';
+
+    if (expiresAt != null) {
+      // If expires_at is present and not expired, consider it active even if status is missing.
+      final bool notExpired = expiresAt.isAfter(DateTime.now());
+      isActive = notExpired && (isActive || currentStatus == null);
+    }
+
+    hasActiveSubscription = isActive;
   }
 }

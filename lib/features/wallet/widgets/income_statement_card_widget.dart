@@ -114,5 +114,6 @@ class IncomeStatementCardWidget extends StatelessWidget {
 double _calculateDriverIncome(
     double paidFare, double adminCommission, double coupon, double discount,
     ){
-  return paidFare + coupon + discount  - adminCommission;
+  // Driver receives full customer amount (no platform/admin commission deduction).
+  return paidFare + coupon + discount;
 }

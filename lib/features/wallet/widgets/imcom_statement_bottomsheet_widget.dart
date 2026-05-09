@@ -116,11 +116,13 @@ class ImcomStatementBottomsheetWidget extends StatelessWidget {
 double _calculateFarePrice(
     double paidFare, double adminCommission, double tips
     ){
-  return paidFare   - adminCommission - tips;
+  // Driver receives full customer amount (no platform/admin commission deduction).
+  return paidFare - tips;
 }
 
 double _calculateSubTotal(
     double paidFare, double adminCommission, double coupon, double discount,
     ){
-  return paidFare + coupon + discount  - adminCommission;
+  // Driver receives full customer amount (no platform/admin commission deduction).
+  return paidFare + coupon + discount;
 }
