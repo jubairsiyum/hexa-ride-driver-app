@@ -97,8 +97,16 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     title: 'Leaderboard',
                     onTap: () => Get.to(() => const LeaderboardScreen()),
                   ),
-                  if ((Get.find<SplashController>().config?.referralEarningStatus ?? false) ||
-                      ((Get.find<ProfileController>().profileInfo?.wallet?.referralEarn ?? 0) > 0))
+                  if ((Get.find<SplashController>()
+                              .config
+                              ?.referralEarningStatus ??
+                          false) ||
+                      ((Get.find<ProfileController>()
+                                  .profileInfo
+                                  ?.wallet
+                                  ?.referralEarn ??
+                              0) >
+                          0))
                     ProfileMenuItem(
                       icon: Images.referralIcon1,
                       title: 'Refer & Earn',
@@ -128,7 +136,11 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     onTap: () => Get.to(
                       () => PolicyViewerScreen(
                         htmlType: HtmlType.privacyPolicy,
-                        image: Get.find<SplashController>().config?.privacyPolicy?.image ?? '',
+                        image: Get.find<SplashController>()
+                                .config
+                                ?.privacyPolicy
+                                ?.image ??
+                            '',
                       ),
                     ),
                   ),
@@ -138,7 +150,11 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     onTap: () => Get.to(
                       () => PolicyViewerScreen(
                         htmlType: HtmlType.termsAndConditions,
-                        image: Get.find<SplashController>().config?.termsAndConditions?.image ?? '',
+                        image: Get.find<SplashController>()
+                                .config
+                                ?.termsAndConditions
+                                ?.image ??
+                            '',
                       ),
                     ),
                   ),
@@ -148,7 +164,11 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     onTap: () => Get.to(
                       () => PolicyViewerScreen(
                         htmlType: HtmlType.refundPolicy,
-                        image: Get.find<SplashController>().config?.refundPolicy?.image ?? '',
+                        image: Get.find<SplashController>()
+                                .config
+                                ?.refundPolicy
+                                ?.image ??
+                            '',
                       ),
                     ),
                   ),
@@ -158,7 +178,9 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     onTap: () => Get.to(
                       () => PolicyViewerScreen(
                         htmlType: HtmlType.legal,
-                        image: Get.find<SplashController>().config?.legal?.image ?? '',
+                        image:
+                            Get.find<SplashController>().config?.legal?.image ??
+                                '',
                       ),
                     ),
                   ),
@@ -171,7 +193,8 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
 
                       return ProfileMenuItem(
                         icon: Images.paymentIcon,
-                        title: isActive ? 'My Subscription' : 'Buy Subscription',
+                        title:
+                            isActive ? 'My Subscription' : 'Buy Subscription',
                         onTap: () async {
                           // Keep existing functionality exactly as-is, only user-facing labels change.
                           if (!isActive) {
@@ -188,12 +211,26 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   ProfileMenuItem(
                     icon: Images.calenderIcon,
                     title: 'Subscription History',
-                    onTap: () => Get.to(() => const SubscriptionHistoryScreen()),
+                    onTap: () =>
+                        Get.to(() => const SubscriptionHistoryScreen()),
                   ),
-                  ProfileMenuItem(
-                    icon: Images.loyaltyPoint,
-                    title: 'Subscription Plans',
-                    onTap: () => Get.to(() => const SubscriptionPlansScreen()),
+                  GetBuilder<SubscriptionController>(
+                    builder: (s) {
+                      final bool isActive = s.hasActiveSubscription;
+
+                      if (!isActive) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return ProfileMenuItem(
+                        icon: Images.loyaltyPoint,
+                        title: 'Manage Subscription',
+                        onTap: () async {
+                          await s.getCurrentSubscription(notify: false);
+                          Get.to(() => const SubscriptionCurrentScreen());
+                        },
+                      );
+                    },
                   ),
 
                   // Logout
@@ -210,7 +247,8 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                               iconColor: Theme.of(context).cardColor,
                               isLoading: authController.logging,
                               title: 'logout'.tr,
-                              description: 'do_you_want_to_log_out_this_account'.tr,
+                              description:
+                                  'do_you_want_to_log_out_this_account'.tr,
                               onYesPressed: () => authController.logOut(),
                               onNoPressed: () => Get.back(),
                             );
@@ -234,7 +272,8 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                               title: 'delete_account'.tr,
                               description: 'permanently_delete_confirm_msg'.tr,
                               onNoPressed: () => Get.back(),
-                              onYesPressed: () => authController.permanentDelete(),
+                              onYesPressed: () =>
+                                  authController.permanentDelete(),
                             );
                           },
                         ),

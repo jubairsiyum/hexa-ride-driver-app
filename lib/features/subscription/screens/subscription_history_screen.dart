@@ -14,7 +14,7 @@ class _SubscriptionHistoryScreenState extends State<SubscriptionHistoryScreen> {
   @override
   void initState() {
     super.initState();
-    Get.find<SubscriptionController>().getHistory();
+    Get.find<SubscriptionController>().getHistory(notify: false);
   }
 
   @override

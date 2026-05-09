@@ -60,6 +60,21 @@ class ApiClient extends GetxService {
   Future<Response> getData(String uri,
       {Map<String, dynamic>? query, Map<String, String>? headers}) async {
     try {
+      // Prevent stale Authorization header after token changes (e.g. change password flow).
+      final latestToken =
+          sharedPreferences.getString(AppConstants.token) ?? '';
+      final latestLanguageCode =
+          sharedPreferences.getString(AppConstants.languageCode) ?? '';
+      final latestZoneId = sharedPreferences.getString(AppConstants.zoneId) ?? '';
+
+      updateHeader(
+        latestToken,
+        latestLanguageCode,
+        '0',
+        '0',
+        latestZoneId,
+      );
+
       if (kDebugMode) {
         log('====> API Call: $uri\nHeader: $_mainHeaders');
       }
@@ -78,6 +93,21 @@ class ApiClient extends GetxService {
   Future<Response> postData(String uri, dynamic body,
       {Map<String, String>? headers}) async {
     try {
+      // Prevent stale Authorization header after token changes (e.g. change password flow).
+      final latestToken =
+          sharedPreferences.getString(AppConstants.token) ?? '';
+      final latestLanguageCode =
+          sharedPreferences.getString(AppConstants.languageCode) ?? '';
+      final latestZoneId = sharedPreferences.getString(AppConstants.zoneId) ?? '';
+
+      updateHeader(
+        latestToken,
+        latestLanguageCode,
+        '0',
+        '0',
+        latestZoneId,
+      );
+
       if (kDebugMode) {
         log('====> API Call: $uri\nHeader: $_mainHeaders');
         log('====> API Body: $body');
