@@ -64,14 +64,14 @@ class ProfileRepository implements ProfileRepositoryInterface{
 
   @override
   Future<Response?> updateProfileInfo(
-      String firstName, String lastname,String email,
+      String firstName, String lastname, String email,
       String identityType, String identityNumber,
       XFile? profile, List<MultipartBody>? identityImage,
       List<String> services,
       List<String> oldDocuments,
       List<MultipartDocument> newDocuments
       ) async {
-    Map<String, String> fields = {};
+    final Map<String, String> fields = <String, String>{};
 
     fields.addAll(<String, String>{
       '_method': 'put',
@@ -79,11 +79,24 @@ class ProfileRepository implements ProfileRepositoryInterface{
       'last_name': lastname,
       'identification_type': identityType,
       'identification_number': identityNumber,
-      'email':email,
+      'email': email,
       'service': jsonEncode(services),
-      'existing_documents': jsonEncode(oldDocuments)
+      'existing_documents': jsonEncode(oldDocuments),
     });
-    return await apiClient.postMultipartData(AppConstants.updateProfileInfo, fields, identityImage!, MultipartBody('profile_image', profile),newDocuments);
+
+    final List<MultipartBody> identityImages = identityImage ?? <MultipartBody>[];
+
+    // Only attach profile image if user actually picked one.
+    final MultipartBody? profileBody =
+        profile != null ? MultipartBody('profile_image', profile) : null;
+
+    return await apiClient.postMultipartData(
+      AppConstants.updateProfileInfo,
+      fields,
+      identityImages,
+      profileBody,
+      newDocuments,
+    );
   }
 
   @override

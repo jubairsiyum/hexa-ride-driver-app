@@ -25,6 +25,7 @@ import 'package:ride_sharing_user_app/features/subscription/screens/buy_subscrip
 import 'package:ride_sharing_user_app/features/subscription/screens/subscription_current_screen.dart';
 import 'package:ride_sharing_user_app/features/subscription/screens/subscription_history_screen.dart';
 import 'package:ride_sharing_user_app/features/subscription/screens/subscription_plans_screen.dart';
+import 'package:ride_sharing_user_app/features/subscription/screens/manage_subscription_screen.dart';
 
 class ProfileMenuScreen extends StatefulWidget {
   const ProfileMenuScreen({super.key});
@@ -227,7 +228,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         title: 'Manage Subscription',
                         onTap: () async {
                           await s.getCurrentSubscription(notify: false);
-                          Get.to(() => const SubscriptionCurrentScreen());
+                          Get.to(() => const ManageSubscriptionScreen());
                         },
                       );
                     },
